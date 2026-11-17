@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.pfx
+
+ClientApp/node_modules/
+ClientApp/dist/
+*.cer

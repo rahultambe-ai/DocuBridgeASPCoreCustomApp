@@ -1,0 +1,58 @@
+@model FolderListing
+@{
+    ViewData["Title"] = "Files";
+    var isAdmin = User.IsInRole(AppRoles.DmsAdmin);
+}
+
+<h2>Files</h2>
+
+<p>
+    <a asp-action="Libraries">&larr; All libraries</a>
+    @if (!Model.IsRoot)
+    {
+        <text> &middot; </text><a asp-action="Files" asp-route-driveId="@Model.DriveId">Library root</a>
+    }
+</p>
+
+<table>
+    <thead>
+        <tr><th>Name</th><th>Size</th><th>Modified (UTC)</th></tr>
+    </thead>
+    <tbody>
+        @if (Model.Items.Count > 0)
+        {
+            foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        @if (item.IsFolder)
+                        {
+                            <a asp-action="Files" asp-route-driveId="@Model.DriveId" asp-route-folderId="@item.Id">&#128193; @item.Name</a>
+                        }
+                        else
+                        {
+                            <a asp-action="Download" asp-route-driveId="@Model.DriveId" asp-route-itemId="@item.Id">@item.Name</a>
+                        }
+                    </td>
+                    <td>@(item.IsFolder || item.Size is null ? "" : $"{item.Size.Value / 1024:N0} KB")</td>
+                    <td>@(item.LastModified?.UtcDateTime.ToString("yyyy-MM-dd HH:mm"))</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr><td colspan="3">This folder is empty.</td></tr>
+        }
+    </tbody>
+</table>
+
+@if (isAdmin)
+{
+    <h3>New folder</h3>
+    <form asp-action="CreateFolder" method="post">
+        <input type="hidden" name="driveId" value="@Model.DriveId" />
+        <input type="hidden" name="parentFolderId" value="@(Model.IsRoot ? "" : Model.FolderId)" />
+        <input type="text" name="folderName" maxlength="255" required placeholder="Folder name" />
+        <button type="submit">Create</button>
+    </form>
+}

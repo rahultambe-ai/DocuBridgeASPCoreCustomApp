@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>SSL_Core_Web_App_Identify_Sample</RootNamespace>
+    <UserSecretsId>ce0512aa-2441-4b05-8d61-7bedea501ef2</UserSecretsId>
+
+    <!-- The DMS React project lives in ClientApp/. The .NET SDK must not treat it as part of this project
+         (its node_modules and sources are not .NET items). Its build output goes to wwwroot/dms. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);ClientApp/**</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Sign-in: used by Auth/Oidc (only active when Authentication:Provider = Oidc) -->
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.13" />
+
+    <!-- Sign-in: used by Auth/Local (only active when Authentication:Provider = LocalIdentity).
+         Delete these three + the Auth/Local folder when the customer's identity replaces it. -->
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.13">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+
+    <!-- SharePoint access (app-only) -->
+    <PackageReference Include="Microsoft.Graph" Version="6.9.0" />
+    <PackageReference Include="Azure.Identity" Version="1.17.2" />
+  </ItemGroup>
+
+  <!-- Builds the DMS React app into wwwroot/dms when that folder is missing (first build) or when you pass
+       -p:BuildClient=true (e.g. before publishing a new version of the React code).
+       Needs Node.js 18+ and internet access for `npm install`.
+       It never fails the .NET build: if Node is missing you get a warning and /Dms shows how to build it by hand.
+       Skip it completely with -p:SkipClientBuild=true. -->
+  <Target Name="BuildDmsClient" BeforeTargets="Build"
+          Condition="'$(SkipClientBuild)' != 'true' And ('$(BuildClient)' == 'true' Or !Exists('$(MSBuildProjectDirectory)/wwwroot/dms/index.html'))">
+    <Message Importance="high" Text="Building the DMS React app (ClientApp) into wwwroot/dms ..." />
+    <Exec WorkingDirectory="$(MSBuildProjectDirectory)/ClientApp" Command="npm install --no-audit --no-fund" ContinueOnError="true" />
+    <Exec WorkingDirectory="$(MSBuildProjectDirectory)/ClientApp" Command="npm run build" ContinueOnError="true" />
+  </Target>
+
+</Project>

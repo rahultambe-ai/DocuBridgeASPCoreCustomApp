@@ -1,0 +1,21 @@
+@inject ICurrentUser Me
+@{
+    ViewData["Title"] = "Home";
+}
+
+<h1>Welcome, @Me.DisplayName</h1>
+
+<p>You are signed in as <strong>@Me.UserName</strong>.</p>
+<p class="muted">Roles: @(Me.Roles.Count > 0 ? string.Join(", ", Me.Roles) : "none")</p>
+
+@if (Me.IsInRole(AppRoles.DmsUser) || Me.IsInRole(AppRoles.DmsAdmin))
+{
+    <p>
+        <a class="button" asp-controller="Dms" asp-action="Index">Open DMS</a>
+    </p>
+    <p class="muted"><a asp-controller="SharePoint" asp-action="Libraries">Browse document libraries</a></p>
+}
+else
+{
+    <p class="error">Your account has no DMS role assigned. Please contact your administrator.</p>
+}

@@ -1,0 +1,24 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Sign in";
+}
+
+<h2>Sign in</h2>
+
+<form asp-action="Login" method="post">
+    <input type="hidden" asp-for="ReturnUrl" />
+
+    <div asp-validation-summary="All" class="error"></div>
+
+    <label asp-for="UserName"></label>
+    <input asp-for="UserName" autocomplete="username" autofocus />
+
+    <label asp-for="Password"></label>
+    <input asp-for="Password" autocomplete="current-password" />
+
+    <label>
+        <input asp-for="RememberMe" /> @Html.DisplayNameFor(m => m.RememberMe)
+    </label>
+
+    <p><button type="submit">Sign in</button></p>
+</form>

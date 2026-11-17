@@ -1,0 +1,27 @@
+@model IReadOnlyList<LibraryInfo>
+@{
+    ViewData["Title"] = "Libraries";
+}
+
+<h2>Document libraries</h2>
+
+<table>
+    <thead>
+        <tr><th>Library</th></tr>
+    </thead>
+    <tbody>
+        @if (Model.Count > 0)
+        {
+            foreach (var lib in Model)
+            {
+                <tr>
+                    <td><a asp-action="Files" asp-route-driveId="@lib.Id">@lib.Name</a></td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr><td>No libraries found.</td></tr>
+        }
+    </tbody>
+</table>

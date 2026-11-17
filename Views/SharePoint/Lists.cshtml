@@ -1,0 +1,25 @@
+@model IReadOnlyList<SharePointListInfo>
+@{
+    ViewData["Title"] = "Lists";
+}
+
+<h2>SharePoint lists</h2>
+
+<table>
+    <thead>
+        <tr><th>Display name</th><th>Name</th></tr>
+    </thead>
+    <tbody>
+        @if (Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr><td>@item.DisplayName</td><td>@item.Name</td></tr>
+            }
+        }
+        else
+        {
+            <tr><td colspan="2">No lists found.</td></tr>
+        }
+    </tbody>
+</table>
